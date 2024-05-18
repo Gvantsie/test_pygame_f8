@@ -78,11 +78,11 @@ while running:
             enemy.move()
             enemy.draw()
 
-        # მოთამაშისა და მტრის შეჯახება
-        if (enemy.x - player_width < player_x < enemy.x + enemy.width and
-                player_y > enemy.y - player_height and player_y < enemy.y + enemy.height):
-            if enemy.color == BLUE:
-                game_over = True
+            # მოთამაშის და მტრების შეხება
+            if player_x < enemy.x + enemy.width and player_x + player_width > enemy.x \
+                    and player_y < enemy.y + enemy.height and player_y + player_height > enemy.y:
+                if enemy.color == BLUE:
+                    game_over = True
     else:
         # თამაშის წაგება
         font = pygame.font.Font(None, 74)
