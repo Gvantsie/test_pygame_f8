@@ -17,6 +17,7 @@ BLUE = (0, 0, 255)
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Test Pygame")
 background = pygame.image.load("back.png")
+player = pygame.image.load("player.png")
 
 
 class Enemy:
@@ -27,15 +28,18 @@ class Enemy:
         self.y = randint(0, WINDOW_HEIGHT - self.height)
         self.color = choice([YELLOW, BLUE])
         self.speed = choice([2, 3, 4])
+        self.touch = False
 
     def move(self):
         self.x += self.speed
         if self.x > WINDOW_WIDTH:
             self.x = -self.width
             self.y = randint(0, WINDOW_HEIGHT - self.height)
+            self.touch = False
 
     def draw(self):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+
 
 # მტრების შექმნა
 enemies = [Enemy() for _ in range(5)]
@@ -46,6 +50,8 @@ player_height = 50
 player_x = 250
 player_y = 350
 player_speed = 5
+
+score = 0
 
 # თამაშის ციკლი
 running = True
@@ -83,15 +89,22 @@ while running:
                     and player_y < enemy.y + enemy.height and player_y + player_height > enemy.y:
                 if enemy.color == BLUE:
                     game_over = True
+                if enemy.color == YELLOW and not enemy.touch:
+                    score += 1
+                    enemy.touch = True
     else:
         # თამაშის წაგება
         font = pygame.font.Font(None, 74)
         text = font.render("Game Over", True, RED)
         window.blit(text, (200, 250))
 
+    # ქულის გამოჩენა
+    font = pygame.font.Font(None, 30)
+    text = font.render(f"Score: {score}", True, (255, 255, 255))
+    window.blit(text, (10, 10))
 
     # მოთამაშის გამოჩენა ეკრანზე
-    pygame.draw.rect(window, RED, (player_x, player_y, player_width, player_height))
+    window.blit(player, (player_x, player_y))
 
     # ეკრანის გნახლება
     pygame.display.update()
