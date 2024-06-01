@@ -16,17 +16,26 @@ BLUE = (0, 0, 255)
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Test Pygame")
+pygame.display.set_icon(pygame.image.load("title_image.png"))
 background = pygame.image.load("back.png")
 player = pygame.image.load("player.png")
 
+enemy = pygame.image.load("enemy.png")
+coin = pygame.image.load("coin.png")
+
 
 class Enemy:
-    def __init__(self):
-        self.width = 50
-        self.height = 50
+    def __init__(self, enemy_type):
+        self.enemy_type = enemy_type
+
+        if self.enemy_type == "enemy":
+            self.image = pygame.image.load("enemy.png")
+        else:
+            self.image = pygame.image.load("coin.png")
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.x = randint(0, WINDOW_WIDTH - self.width)
         self.y = randint(0, WINDOW_HEIGHT - self.height)
-        self.color = choice([YELLOW, BLUE])
         self.speed = choice([2, 3, 4])
         self.touch = False
 
@@ -38,11 +47,12 @@ class Enemy:
             self.touch = False
 
     def draw(self):
-        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height))
+        window.blit(self.image, (self.x, self.y))
 
 
 # მტრების შექმნა
-enemies = [Enemy() for _ in range(5)]
+enemies = [Enemy("enemy") for _ in range(3)]
+enemies.extend([Enemy("coin") for _ in range(4)])
 
 # მოთამაშის აღწერა
 player_width = 50
@@ -84,19 +94,20 @@ while running:
             enemy.move()
             enemy.draw()
 
+
             # მოთამაშის და მტრების შეხება
             if player_x < enemy.x + enemy.width and player_x + player_width > enemy.x \
                     and player_y < enemy.y + enemy.height and player_y + player_height > enemy.y:
-                if enemy.color == BLUE:
+                if enemy.enemy_type == "enemy":
                     game_over = True
-                if enemy.color == YELLOW and not enemy.touch:
+                if enemy.enemy_type == "coin" and not enemy.touch:  # ქულის სპრაიტზე შეხებისას ქულა ჩაითვალოს მხოლოდ ერთხელ
                     score += 1
                     enemy.touch = True
     else:
         # თამაშის წაგება
         font = pygame.font.Font(None, 74)
         text = font.render("Game Over", True, RED)
-        window.blit(text, (200, 250))
+        window.blit(text, (250, 250))
 
     # ქულის გამოჩენა
     font = pygame.font.Font(None, 30)
